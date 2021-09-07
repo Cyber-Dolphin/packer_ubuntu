@@ -1,0 +1,63 @@
+{
+  "builders": [
+    {
+      "boot_command": [
+            "<esc><esc><enter><wait>",
+            "/install/vmlinuz noapic ",
+            "initrd=/install/initrd.gz ",
+            "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>",
+            "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+            "hostname={{ .Name }} <wait>",
+            "grub-installer/bootdev=/dev/sda<wait> ",
+            "fb=false debconf/frontend=noninteractive ",
+            "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+            "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+            "-- <enter>"
+      ],
+      "boot_wait": "5s",
+      "disk_size": 30000,
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "guest_os_type": "Ubuntu_64",
+      "headless": true,
+      "http_directory": "http",
+      "iso_checksum": "sha256:8c5fc24894394035402f66f3824beb7234b757dd2b5531379cb310cedfdf0996",
+      "iso_urls": [
+        "iso-cd/ubuntu-18.04.5-server-amd64.iso",
+        "http://cdimage.ubuntu.com/ubuntu/releases/18.04.5/release/ubuntu-18.04.5-server-amd64.iso"
+      ],
+      "shutdown_command": "echo 'Passw0rd!'|sudo -S shutdown -P now",
+      "ssh_password": "Passw0rd!",
+      "ssh_port": 22,
+      "ssh_timeout": "10000s",
+      "ssh_username": "sadmin",
+      "type": "virtualbox-iso",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "1024"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "1"
+        ]
+      ],
+      "virtualbox_version_file": ".vbox_version",
+      "vm_name": "cyberdolphin-ubuntu-18.04"
+    }
+  ],
+  "provisioners": [
+    {
+      "execute_command": "echo 'Passw0rd!' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "script": "scripts/start-config.sh",
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "version": ""
+  }
+}
+
